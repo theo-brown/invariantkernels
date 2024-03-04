@@ -39,31 +39,21 @@ class GroupInvariantKernel(gpytorch.kernels.Kernel):
         self.base_kernel = base_kernel
         self.transformation_group = transformation_group
 
-    # TODO: Not sure if this is necessary
-    @property
-    def is_stationary(self) -> bool:
-        return self.base_kernel.is_stationary
+    def forward(
+        self, x1, x2, diag: bool = False, last_dim_is_batch: bool = False, **kwargs
+    ) -> torch.tensor:
+        if last_dim_is_batch:
+            raise NotImplementedError(
+                "last_dim_is_batch=True not implemented for GroupInvariantKernel."
+            )
 
-    # TODO: This errors with "AttributeError: 'GroupInvariantKernel' object has no attribute 'has_lengthscale'"
-    # @property
-    # def has_lengthscale(self) -> bool:
-    #     return self.base_kernel.has_lengthscale
-
-    def forward(self, x1, x2, **kwargs) -> torch.tensor:
         x1_orbits = self.transformation_group(x1)  # Shape is G x n x d
-        # Averge across the first dimension (the orbits)
+        # Average across the first dimension (the orbits)
         # Use `forward` instead of `__call__` to avoid the post-processing
         # steps that make the kernel a lazy object, which doesn't support torch.mean
-        return torch.mean(self.base_kernel.forward(x1_orbits, x2), dim=0)
+        K = torch.mean(self.base_kernel.forward(x1_orbits, x2), dim=0)
 
-    # TODO: Not sure if this is necessary
-    def num_outputs_per_input(self, x1, x2):
-        return self.base_kernel.num_outputs_per_input(x1, x2)
-
-    # TODO: Not sure if this is necessary
-    def prediction_strategy(
-        self, train_inputs, train_prior_dist, train_labels, likelihood
-    ):
-        return self.base_kernel.prediction_strategy(
-            train_inputs, train_prior_dist, train_labels, likelihood
-        )
+        if diag:
+            return K.diag()
+        else:
+            return K
