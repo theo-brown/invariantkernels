@@ -9,17 +9,21 @@ def permutation_group(x: torch.Tensor) -> torch.tensor:
     Parameters
     ----------
     x : torch.Tensor
-        Input data. Shape is ``(n, d)``, where ``n`` is the number of data points and ``d`` is the number of input dimensions.
+        Input data. Shape is ``(n, d)`` or ``(b, n, d), where ``b`` is the batch size, ``n`` is the number of data points and ``d`` is the number of input dimensions.
 
     Returns
     -------
     torch.tensor
         All permutations of the last dimension of x. Shape is ``(G, n, d)``, where ``G`` is the number of permutations of the last dimension of x.
     """
-    indices = range(x.size(-1))  # x is of shape n x d
+    indices = range(x.size(-1))  # x is of shape n x d or b x n x d
     permuted_indices = [list(p) for p in itertools.permutations(indices)]
-    x_orbits = x[:, permuted_indices]  # Shape is n x G x d
-    return x_orbits.permute(1, 0, 2)  # Reorder the dimensions to G x n x d
+    if x.dim() == 2:
+        x_orbits = x[:, permuted_indices]  # Shape is n x G x d
+        return x_orbits.permute(1, 0, 2)  # Reorder the dimensions to G x n x d
+    elif x.dim() == 3:
+        x_orbits = x[:, :, permuted_indices]  # Shape is b x n x G x d
+        return x_orbits.permute(2, 0, 1, 3)  # Reorder the dimensions to G x b x n x d
 
 
 def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
@@ -28,7 +32,7 @@ def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
     Parameters
     ----------
     x : torch.Tensor
-        Input data. Shape is ``(n, d)``, where ``n`` is the number of data points and ``d`` is the number of input dimensions.
+        Input data. Shape is ``(n, d)`` or ``(b, n, d), where ``b`` is the batch size, ``n`` is the number of data points and ``d`` is the number of input dimensions.
     block_size : int
         Size of the blocks to permute. Must be a divisor of the last dimension of x.
 
@@ -49,5 +53,10 @@ def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
         list(itertools.chain.from_iterable(p))
         for p in itertools.permutations(block_indices)
     ]
-    x_orbits = x[:, permuted_indices]  # Shape is n x G x d
-    return x_orbits.permute(1, 0, 2)  # Reorder the dimensions to G x n x d
+
+    if x.dim() == 2:
+        x_orbits = x[:, permuted_indices]  # Shape is n x G x d
+        return x_orbits.permute(1, 0, 2)  # Reorder the dimensions to G x n x d
+    elif x.dim() == 3:
+        x_orbits = x[:, :, permuted_indices]  # Shape is b x n x G x d
+        return x_orbits.permute(2, 0, 1, 3)  # Reorder the dimensions to G x b x n x d
