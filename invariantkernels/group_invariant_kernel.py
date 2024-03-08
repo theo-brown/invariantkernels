@@ -48,10 +48,17 @@ class GroupInvariantKernel(gpytorch.kernels.Kernel):
             )
 
         x1_orbits = self.transformation_group(x1)  # Shape is G x n x d
+
         # Average across the first dimension (the orbits)
         # Use `forward` instead of `__call__` to avoid the post-processing
         # steps that make the kernel a lazy object, which doesn't support torch.mean
-        K = torch.mean(self.base_kernel.forward(x1_orbits, x2), dim=0)
+        # This is super memory hungry for large groups - do an incremental mean instead
+        # K = torch.mean(self.base_kernel.forward(x1_orbits, x2), dim=0)
+
+        K = self.base_kernel.forward(x1_orbits[0], x2)
+        for i in range(1, x1_orbits.shape[0]):
+            K += self.base_kernel.forward(x1_orbits[i], x2)
+        K /= x1_orbits.shape[0]
 
         if diag:
             return K.diag()
