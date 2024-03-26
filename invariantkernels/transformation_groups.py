@@ -24,6 +24,10 @@ def permutation_group(x: torch.Tensor) -> torch.tensor:
     elif x.dim() == 3:
         x_orbits = x[:, :, permuted_indices]  # Shape is b x n x G x d
         return x_orbits.permute(2, 0, 1, 3)  # Reorder the dimensions to G x b x n x d
+    else:
+        raise ValueError(
+            "Input x must have 2 or 3 dimensions (got {x.dim()} dimensions, shape {x.shape})."
+        )
 
 
 def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
@@ -60,3 +64,7 @@ def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
     elif x.dim() == 3:
         x_orbits = x[:, :, permuted_indices]  # Shape is b x n x G x d
         return x_orbits.permute(2, 0, 1, 3)  # Reorder the dimensions to G x b x n x d
+    else:
+        raise ValueError(
+            "Input x must have 2 or 3 dimensions (got {x.dim()} dimensions, shape {x.shape})."
+        )
