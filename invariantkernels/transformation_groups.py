@@ -16,7 +16,7 @@ def permutation_group(x: torch.Tensor) -> torch.tensor:
     torch.tensor
         All permutations of the last dimension of x. Shape is ``(G, n, d)``, where ``G`` is the number of permutations of the last dimension of x.
     """
-    indices = range(x.size(-1))  # x is of shape n x d or b x n x d
+    indices = range(x.shape[-1])  # x is of shape n x d or b x n x d
     permuted_indices = [list(p) for p in itertools.permutations(indices)]
     if x.dim() == 2:
         x_orbits = x[:, permuted_indices]  # Shape is n x G x d
@@ -45,10 +45,10 @@ def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
     torch.tensor
         All block-permutations of the last dimension of x. Shape is ``(G, n, d)``, where ``G`` is the number of block-permutations of the last dimension of x.
     """
-    if x.size(-1) % block_size != 0:
+    if x.shape[-1] % block_size != 0:
         raise ValueError(
             "Last dimension of x must be a multiple of block size"
-            f" (got {x.size(-1)} and {block_size} respectively)."
+            f" (got {x.shape[-1]} and {block_size} respectively)."
         )
 
     block_indices = [range(i, i + block_size) for i in range(0, x.size(-1), block_size)]
