@@ -8,5 +8,5 @@ Example groups are in [`invariant_kernels/transformation_groups`](./invariantker
 ## Build notes 
 1. Update the version in `pyproject.toml`
 2. Remove the old versions from `build/` and `dist/`
-3. Run `python -m` build
+3. Run `python -m build`
 4. Run `twine upload dist/*`

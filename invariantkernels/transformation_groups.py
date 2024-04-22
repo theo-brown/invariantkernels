@@ -4,7 +4,7 @@ from typing import Iterator
 import torch
 
 
-def permutations(x: torch.Tensor) -> Iterator[torch.Tensor]:
+def permutation_group(x: torch.Tensor) -> Iterator[torch.Tensor]:
     """Generator that produces all permutations of the last dimension of x."""
     d = x.shape[-1]
     indices = torch.arange(0, d)
@@ -12,7 +12,7 @@ def permutations(x: torch.Tensor) -> Iterator[torch.Tensor]:
         yield x[..., p].squeeze()
 
 
-def block_permutations(x: torch.Tensor, block_size: int) -> Iterator[torch.Tensor]:
+def block_permutation_group(x: torch.Tensor, block_size: int) -> Iterator[torch.Tensor]:
     """Generator that produces all permutations of the last dimension of x in blocks of size block_size."""
     d = x.shape[-1]
     if d % block_size != 0:
@@ -33,5 +33,5 @@ def block_permutations(x: torch.Tensor, block_size: int) -> Iterator[torch.Tenso
     # tensor([[0, 2, 4], [1, 3, 5]]), tensor([[2, 0, 4], [3, 1, 5]]), ...
     # Transpose and flatten to get
     # tensor([0, 2, 4, 1, 3, 5]), tensor([2, 0, 4, 3, 1, 5]), ...
-    for p in permutations(block_indices):
+    for p in permutation_group(block_indices):
         yield x[..., p.T.flatten()].squeeze()

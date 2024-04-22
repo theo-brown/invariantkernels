@@ -51,7 +51,7 @@ class AnisotropicGroupInvariantKernel(gpytorch.kernels.Kernel):
 
         if last_dim_is_batch:
             raise NotImplementedError(
-                "last_dim_is_batch=True not implemented for IsotropicGroupInvariantKernel."
+                "last_dim_is_batch=True not implemented for AnisotropicGroupInvariantKernel."
             )
 
         # Note: we are optimising for memory usage first, and then performance afterwards.
