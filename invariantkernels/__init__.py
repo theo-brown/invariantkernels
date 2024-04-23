@@ -1,3 +1,2 @@
-from .anisotropic_group_invariant_kernel import AnisotropicGroupInvariantKernel
-from .isotropic_group_invariant_kernel import IsotropicGroupInvariantKernel
+from .invariant_kernel import InvariantKernel
 from .transformation_groups import block_permutation_group, permutation_group
