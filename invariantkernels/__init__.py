@@ -1,2 +1,2 @@
-from .group_invariant_kernel import GroupInvariantKernel
+from .invariant_kernel import InvariantKernel
 from .transformation_groups import block_permutation_group, permutation_group
