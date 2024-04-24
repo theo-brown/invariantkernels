@@ -46,23 +46,25 @@ class InvariantKernel(gpytorch.kernels.Kernel):
                 "last_dim_is_batch=True not supported for GroupInvariantKernel."
             )
 
-        x1_orbits = self.transformations(x1)  # Shape is G x ... x N x d
+        x1_orbits = self.transformations(x1)  # Shape is ... x G x N x d
+        G = x1_orbits.shape[-3]
         if self.is_isotropic:
             # Sum is over a single set of orbits
-            # x2_orbits should be constructed by tiling x2
-            x2_orbits = x2.unsqueeze(0).expand(x1_orbits.shape)
-            K = torch.mean(self.base_kernel.forward(x1_orbits, x2_orbits), dim=0)
+            # x2_orbits should be constructed by tiling x2 along the -3 axis
+            dims = [-1] * (x2.dim() + 1)
+            dims[-3] = G
+            x2_orbits = x2.unsqueeze(-3).expand(dims)
+            K_orbits = self.base_kernel.forward(x1_orbits, x2_orbits)
+            K = torch.mean(K_orbits, dim=-3)
         else:
-            G = x1_orbits.shape[0]
-
             # Sum is over all pairs of orbits
             # x2_orbits should be constructed by applying the transformations to x2
-            x2_orbits = self.transformations(x2)  # Shape is G x ... x M x d
+            x2_orbits = self.transformations(x2)  # Shape is ... x G x M x d
 
-            if x2_orbits.shape[0] != G:
+            if x2_orbits.shape[-3] != G or x1_orbits.shape[-3] != G:
                 raise ValueError(
                     "Different numbers of orbits for x1 and x2. "
-                    "Check that self.transformations returns a tensor of shape (G, ..., N, d)."
+                    "Check that self.transformations returns a tensor of shape (..., G, N, d)."
                 )
 
             # WARNING: This is quadratic in the number of orbits!
@@ -70,15 +72,19 @@ class InvariantKernel(gpytorch.kernels.Kernel):
             # TODO: Should be a way of doing it with less memory
             # Repeat each element of x1_orbits G times
             # New shape is G^2 x ... x N x d
-            x1_orbits_expanded = x1_orbits.repeat_interleave(G, dim=0)
+            x1_orbits_expanded = x1_orbits.repeat_interleave(G, dim=-3)
+            print(x1_orbits_expanded.shape)
             # Repeat the entire x2_orbits G times
-            # New shape is G^2 x ... x M x d
-            keepdims = x2_orbits.dim() - 1
-            x2_orbits_expanded = x2_orbits.repeat(G, *[1] * keepdims)
+            # New shape is ... x G^2 x M x d
+            dims = [1] * x2_orbits.dim()
+            dims[-3] = G
+            x2_orbits_expanded = x2_orbits.repeat(dims)
+            print(x2_orbits_expanded.shape)
             # Compute the kernel between each pair of expanded orbits = all combinations of orbits
-            K = torch.mean(
-                self.base_kernel.forward(x1_orbits_expanded, x2_orbits_expanded), dim=0
-            )
+            K_orbits = self.base_kernel.forward(x1_orbits_expanded, x2_orbits_expanded)
+            print(K_orbits.shape)
+            K = torch.mean(K_orbits, dim=-3)
+            print(K.shape)
 
         if diag:
             return K.diag()

@@ -5,43 +5,17 @@ import torch
 
 
 def permutation_group(x: torch.Tensor) -> torch.tensor:
-    """Generate all permutations of the last dimension of x.
-
-    Parameters
-    ----------
-    x : torch.Tensor
-        Input data. Shape is ``(..., n, d)``, ``n`` is the number of data points and ``d`` is the number of input dimensions.
-
-    Returns
-    -------
-    torch.tensor
-        All permutations of the last dimension of x. Shape is ``(G, ..., n, d)``, where ``G`` is the number of permutations of the last dimension of x.
-    """
     indices = range(x.shape[-1])
     permuted_indices = [list(p) for p in itertools.permutations(indices)]
     permuted_x = x[..., permuted_indices]
     # permuted_x is a tensor of shape (..., n, G, d)
-    # Reorder the dimensions to (G, ..., n, d)
+    # Reorder the dimensions to (..., G, n, d)
     dim_indices = list(range(permuted_x.dim()))
-    dim_indices[0], dim_indices[-2] = dim_indices[-2], dim_indices[0]
+    dim_indices[-2], dim_indices[-3] = dim_indices[-3], dim_indices[-2]
     return permuted_x.permute(*dim_indices)
 
 
 def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
-    """Generate all block-permutations of the last dimension of x, in blocks of size block_size.
-
-    Parameters
-    ----------
-    x : torch.Tensor
-        Input data. Shape is ``(..., n, d)`` where ``n`` is the number of data points and ``d`` is the number of input dimensions.
-    block_size : int
-        Size of the blocks to permute. Must be a divisor of the last dimension of x.
-
-    Returns
-    -------
-    torch.tensor
-        All block-permutations of the last dimension of x. Shape is ``(G, ..., n, d)``, where ``G`` is the number of block-permutations of the last dimension of x.
-    """
     if x.shape[-1] % block_size != 0:
         raise ValueError(
             "Last dimension of x must be a multiple of block size"
@@ -58,7 +32,7 @@ def block_permutation_group(x: torch.Tensor, block_size: int) -> torch.tensor:
     ]
     permuted_x = x[..., permuted_indices]
     # permuted_x is a tensor of shape (..., n, G, d)
-    # Reorder the dimensions to (G, ..., n, d)
+    # Reorder the dimensions to (..., G, n, d)
     dim_indices = list(range(permuted_x.dim()))
-    dim_indices[0], dim_indices[-2] = dim_indices[-2], dim_indices[0]
+    dim_indices[-2], dim_indices[-3] = dim_indices[-3], dim_indices[-2]
     return permuted_x.permute(*dim_indices)
