@@ -73,18 +73,14 @@ class InvariantKernel(gpytorch.kernels.Kernel):
             # Repeat each element of x1_orbits G times
             # New shape is G^2 x ... x N x d
             x1_orbits_expanded = x1_orbits.repeat_interleave(G, dim=-3)
-            print(x1_orbits_expanded.shape)
             # Repeat the entire x2_orbits G times
             # New shape is ... x G^2 x M x d
             dims = [1] * x2_orbits.dim()
             dims[-3] = G
             x2_orbits_expanded = x2_orbits.repeat(dims)
-            print(x2_orbits_expanded.shape)
             # Compute the kernel between each pair of expanded orbits = all combinations of orbits
             K_orbits = self.base_kernel.forward(x1_orbits_expanded, x2_orbits_expanded)
-            print(K_orbits.shape)
             K = torch.mean(K_orbits, dim=-3)
-            print(K.shape)
 
         if diag:
             return K.diag()
