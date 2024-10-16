@@ -5,13 +5,7 @@ This package provides kernels for Gaussian processes that are invariant to trans
 The core class is `GroupInvariantKernel`, which can be composed with other GPyTorch kernels to make them invariant to a group of transformations.
 Example groups are in [`invariant_kernels/transformation_groups`](./invariantkernels/transformation_groups.py).
 
-## Development notes 
+#### Citing
 
-Before making any commits or pushing a new version to PyPI, run `pytest`.
-
-To push a new version to PyPI:
-
-1. Update the version in `pyproject.toml`
-2. Remove the old versions from `build/` and `dist/`
-3. Run `python -m build`
-4. Run `twine upload dist/*`
+The package was developed for the paper *Sample-efficient Bayesian Optimisation Using Known Invariances*, NeurIPS 2024. 
+The rest of the code can be found at [theo-brown/bayesopt_with_invariances](https://github.com/theo-brown/bayesopt_with_invariances).
