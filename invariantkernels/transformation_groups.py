@@ -1,5 +1,4 @@
 import itertools
-from typing import Iterator
 
 import torch
 
