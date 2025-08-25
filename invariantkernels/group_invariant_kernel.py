@@ -7,7 +7,7 @@ import torch
 class GroupInvariantKernel(gpytorch.kernels.Kernel):
     r"""A kernel that is invariant to a group of transformations.
 
-    The invariant kernel is defined as
+    The group-invariant kernel is defined as
 
     .. math::
         k_G(x, y) = \frac{1}{|G|^2} \sum_{g \in G} \sum_{h \in G} k(g(x), h(y)),
@@ -20,7 +20,7 @@ class GroupInvariantKernel(gpytorch.kernels.Kernel):
     .. math::
         k_G(x, y) = \frac{1}{|G|} \sum_{g \in G} k(g(x), y).
 
-    The *normalised* invariant kernel is defined as:
+    The *normalised* group-invariant kernel is defined as:
 
     .. math::
         \bar{k_G}(x, y) = \frac{k_G(x,y)}{\sqrt{k_G(x, x) k_G(y, y)}}.
@@ -30,7 +30,7 @@ class GroupInvariantKernel(gpytorch.kernels.Kernel):
         self,
         base_kernel: gpytorch.kernels.Kernel,
         transformations: Callable[[torch.tensor], torch.tensor],
-        is_isotropic: bool = False,
+        isotropic: bool = False,
         normalised: bool = False,
         **kwargs,
     ) -> None:
@@ -38,7 +38,7 @@ class GroupInvariantKernel(gpytorch.kernels.Kernel):
 
         self.base_kernel = base_kernel
         self.transformations = transformations
-        self.is_isotropic = is_isotropic
+        self.isotropic = isotropic
         self.normalised = normalised
 
     def forward(
@@ -80,7 +80,8 @@ class GroupInvariantKernel(gpytorch.kernels.Kernel):
         else:
             K = K_x1x2 / x1_orbits.shape[-3] ** 2
 
+        # TODO: ensure outputs are lazy
         if diag:
-            return K.diag()
+            return K.to_dense().diag()
         else:
             return K

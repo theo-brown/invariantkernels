@@ -78,7 +78,7 @@ def compare_with_manual_kernel_matrix(
     k_G = GroupInvariantKernel(
         base_kernel=k,
         transformations=permutation_group,
-        is_isotropic=isotropic,
+        isotropic=isotropic,
         normalised=normalised,
     )
     torch.manual_seed(0)
