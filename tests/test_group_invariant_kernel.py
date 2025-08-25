@@ -72,14 +72,14 @@ def compare_with_manual_kernel_matrix(
     n_datapoints: int,
     dimension: int,
     isotropic: bool,
-    normalised: bool,
+    normalize: bool,
 ):
     k = ScaleKernel(MaternKernel(nu=2.5, lengthscale=lengthscale))
     k_G = GroupInvariantKernel(
         base_kernel=k,
         transformations=permutation_group,
         isotropic=isotropic,
-        normalised=normalised,
+        normalize=normalize,
     )
     torch.manual_seed(0)
 
@@ -107,7 +107,7 @@ def compare_with_manual_kernel_matrix(
 
     # Check symmetry
     manual_k_G_xx_matrix = compute_manual_kernel_matrix(
-        k, x, x, permutation_group, normalised
+        k, x, x, permutation_group, normalize
     )
     assert torch.allclose(k_G_xx_matrix, manual_k_G_xx_matrix)
     assert torch.allclose(k_G_xx_matrix.transpose(-2, -1), k_G_xx_matrix)
@@ -115,7 +115,7 @@ def compare_with_manual_kernel_matrix(
 
     # Check values
     manual_k_G_xy_matrix = compute_manual_kernel_matrix(
-        k, x, y, permutation_group, normalised
+        k, x, y, permutation_group, normalize
     )
     assert torch.allclose(k_G_xy_matrix, manual_k_G_xy_matrix)
 
@@ -127,7 +127,7 @@ def test_anisotropic_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=False,
-        normalised=False,
+        normalize=False,
     )
 
 
@@ -138,7 +138,7 @@ def test_isotropic_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=True,
-        normalised=False,
+        normalize=False,
     )
 
 
@@ -149,7 +149,7 @@ def test_anisotropic_normalised_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=False,
-        normalised=True,
+        normalize=True,
     )
 
 
@@ -160,7 +160,7 @@ def test_isotropic_normalised_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=True,
-        normalised=True,
+        normalize=True,
     )
 
 
@@ -171,7 +171,7 @@ def test_batch_anisotropic_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=False,
-        normalised=False,
+        normalize=False,
     )
 
 
@@ -182,7 +182,7 @@ def test_batch_isotropic_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=True,
-        normalised=False,
+        normalize=False,
     )
 
 
@@ -193,7 +193,7 @@ def test_batch_anisotropic_normalised_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=False,
-        normalised=True,
+        normalize=True,
     )
 
 
@@ -204,5 +204,5 @@ def test_batch_isotropic_normalised_group_invariant():
         n_datapoints=10,
         dimension=3,
         isotropic=True,
-        normalised=True,
+        normalize=True,
     )
