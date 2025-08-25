@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "invariantkernels"
-version = "0.0.12"
+version = "0.0.13"
 dependencies = [
   "gpytorch"
 ]
@@ -27,3 +27,6 @@ classifiers = [
 packages = [
     "invariantkernels"
 ]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "pre-commit"]
