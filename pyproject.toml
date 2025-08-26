@@ -30,4 +30,4 @@ packages = [
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "pre-commit"]
-demo = ["botorch", "matplotlib"]
+demo = ["botorch", "matplotlib", "tqdm", "h5py"]

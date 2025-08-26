@@ -7,5 +7,5 @@ Example groups are in [`invariant_kernels/transformation_groups`](./invariantker
 
 #### Citing
 
-The package was developed for the paper *Sample-efficient Bayesian Optimisation Using Known Invariances*, NeurIPS 2024. 
-The rest of the code can be found at [theo-brown/bayesopt_with_invariances](https://github.com/theo-brown/bayesopt_with_invariances).
+The package was developed for the paper [*Sample-efficient Bayesian Optimisation Using Known Invariances*, NeurIPS 2024](https://proceedings.neurips.cc/paper_files/paper/2024/hash/55aeba84b402008d3ed10440d906b4e1-Abstract-Conference.html). 
+Code for the experiments in the paper can be found at [theo-brown/bayesopt_with_invariances](https://github.com/theo-brown/bayesopt_with_invariances).
